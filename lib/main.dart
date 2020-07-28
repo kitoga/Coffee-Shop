@@ -1,5 +1,6 @@
-import 'package:coffee_shop/screens/services/auth.dart';
+import 'package:coffee_shop/models/model.dart';
 import 'package:coffee_shop/screens/wrapper.dart';
+import 'package:coffee_shop/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,10 +12,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return StreamProvider.value(
-          value: AuthService().user,
+    return StreamProvider<User>.value(
+        value: AuthService().user,
           child: MaterialApp(
-        home: Wrapper(),
+          home: Wrapper(),
       ),
     );
   }

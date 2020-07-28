@@ -1,5 +1,6 @@
-import 'package:coffee_shop/screens/services/auth.dart';
+import 'package:coffee_shop/services/auth.dart';
 import 'package:coffee_shop/shared/constant.dart';
+import 'package:coffee_shop/shared/loading.dart';
 import 'package:flutter/material.dart';
 
 class Register extends StatefulWidget {
@@ -15,6 +16,7 @@ class _RegisterState extends State<Register> {
 
   final AuthService _auth = AuthService();
   final _formkey = GlobalKey<FormState>();
+  bool loading = false;
 
   //text field
   String email = '';
@@ -24,7 +26,7 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? Loading() : Scaffold(
       backgroundColor: Colors.brown[100],
       appBar: AppBar(
         backgroundColor: Colors.brown[400],
@@ -48,8 +50,8 @@ class _RegisterState extends State<Register> {
              children: <Widget>[
                SizedBox(height: 20,),
                TextFormField(
-                 decoration: textInputDecoration,
-                 validator: (val) => val.isEmpty ? 'Enter email address' : null,
+                 decoration: textInputDecoration.copyWith(hintText: 'Email'),
+                 validator: (val) => val.isEmpty ? 'Enter email address': null,
                  onChanged: (val) {
                    setState(() {
                      email = val;
@@ -58,7 +60,7 @@ class _RegisterState extends State<Register> {
                ),
                SizedBox(height: 15,),
                TextFormField(
-                 decoration: textInputDecoration,
+                 decoration: textInputDecoration.copyWith(hintText: 'Password'),
                  obscureText: true,
                  validator: (val) => val.isEmpty ? 'Enter correct password' : null,
                  onChanged: (val) {
@@ -71,10 +73,25 @@ class _RegisterState extends State<Register> {
                RaisedButton(
                  textColor: Colors.black,
                  onPressed: () async {
-                   print(email);
-                   print(password);
+                   if(_formkey.currentState.validate()){
+                     setState(() {
+                       loading = true;
+                     });
+                     dynamic result  = await _auth.registerWithEmailAndPassword(email, password);
+                     if(result == null){
+                       setState(() {
+                         error = 'Please put in valid email and password';
+                         loading = false;
+                       });
+                     }
+                   }
                  },
                  child: Text('register'),
+               ),
+               SizedBox(height: 12,),
+               Text(
+                 error,
+                 style: TextStyle(color: Colors.red, fontSize: 12),
                )
              ],
            ),
